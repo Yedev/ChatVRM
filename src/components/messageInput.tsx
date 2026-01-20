@@ -19,7 +19,7 @@ export const MessageInput = ({
   onClickSendButton,
 }: Props) => {
   return (
-    <div className="absolute bottom-0 right-0 z-20 w-1/2">
+    <div className="absolute bottom-0 right-0 z-20 w-2/3">
       <div className="bg-base text-black">
         <div className="mx-auto max-w-4xl p-16">
           <div className="grid grid-flow-col gap-[8px] grid-cols-[min-content_1fr_min-content]">

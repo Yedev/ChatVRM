@@ -92,8 +92,9 @@ export class Viewer {
 
     // camera
     this._camera = new THREE.PerspectiveCamera(20.0, width / height, 0.1, 20.0);
-    this._camera.position.set(0, 1.3, 1.5);
-    this._cameraControls?.target.set(0, 1.3, 0);
+    // Initial position for full body view (approximate)
+    this._camera.position.set(0, 1.0, 4.0); 
+    this._cameraControls?.target.set(0, 0.85, 0);
     this._cameraControls?.update();
     // camera controls
     this._cameraControls = new OrbitControls(
@@ -135,17 +136,33 @@ export class Viewer {
    * VRMのheadノードを参照してカメラ位置を調整する
    */
   public resetCamera() {
+    // Try to target hips for full body view, fallback to head with offset
+    const hipsNode = this.model?.vrm?.humanoid.getNormalizedBoneNode("hips");
     const headNode = this.model?.vrm?.humanoid.getNormalizedBoneNode("head");
+    
+    // Default targets
+    let targetX = 0;
+    let targetY = 0.85; // Approx waist height
+    let targetZ = 0;
 
-    if (headNode) {
-      const headWPos = headNode.getWorldPosition(new THREE.Vector3());
-      this._camera?.position.set(
-        this._camera.position.x,
-        headWPos.y,
-        this._camera.position.z
-      );
-      this._cameraControls?.target.set(headWPos.x, headWPos.y, headWPos.z);
-      this._cameraControls?.update();
+    if (hipsNode) {
+        const hipsWPos = hipsNode.getWorldPosition(new THREE.Vector3());
+        targetX = hipsWPos.x;
+        targetY = hipsWPos.y;
+        targetZ = hipsWPos.z;
+    } else if (headNode) {
+        const headWPos = headNode.getWorldPosition(new THREE.Vector3());
+        targetX = headWPos.x;
+        targetY = headWPos.y / 2; // Estimate waist height
+        targetZ = headWPos.z;
+    }
+
+    if (this._camera) {
+        // Distance for full body with 20 deg FOV (approx 4.0 - 5.0 units back)
+        const distance = 4.5;
+        this._camera.position.set(targetX, targetY, targetZ + distance);
+        this._cameraControls?.target.set(targetX, targetY, targetZ);
+        this._cameraControls?.update();
     }
   }
 
