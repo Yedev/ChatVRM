@@ -19,7 +19,7 @@ export const MessageInput = ({
   onClickSendButton,
 }: Props) => {
   return (
-    <div className="absolute bottom-0 z-20 w-screen">
+    <div className="absolute bottom-0 right-0 z-20 w-1/2">
       <div className="bg-base text-black">
         <div className="mx-auto max-w-4xl p-16">
           <div className="grid grid-flow-col gap-[8px] grid-cols-[min-content_1fr_min-content]">
@@ -32,7 +32,7 @@ export const MessageInput = ({
             />
             <input
               type="text"
-              placeholder="聞きたいことをいれてね"
+              placeholder="请输入你想问的内容"
               onChange={onChangeUserMessage}
               disabled={isChatProcessing}
               className="bg-surface1 hover:bg-surface1-hover focus:bg-surface1 disabled:bg-surface1-disabled disabled:text-primary-disabled rounded-16 w-full px-16 text-text-primary typography-16 font-bold disabled"
@@ -49,7 +49,7 @@ export const MessageInput = ({
           </div>
         </div>
         <div className="py-4 bg-[#413D43] text-center text-white font-Montserrat">
-          powered by VRoid, Koemotion, ChatGPT API
+          powered by VRoid, Koemotion, Volcano Engine
         </div>
       </div>
     </div>

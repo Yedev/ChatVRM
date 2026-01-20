@@ -38,7 +38,6 @@ export const Menu = ({
   onChangeKoeiromapKey,
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
-  const [showChatLog, setShowChatLog] = useState(false);
   const { viewer } = useContext(ViewerContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,29 +103,13 @@ export const Menu = ({
         <div className="grid grid-flow-col gap-[8px]">
           <IconButton
             iconName="24/Menu"
-            label="設定"
+            label="设置"
             isProcessing={false}
             onClick={() => setShowSettings(true)}
           ></IconButton>
-          {showChatLog ? (
-            <IconButton
-              iconName="24/CommentOutline"
-              label="会話ログ"
-              isProcessing={false}
-              onClick={() => setShowChatLog(false)}
-            />
-          ) : (
-            <IconButton
-              iconName="24/CommentFill"
-              label="会話ログ"
-              isProcessing={false}
-              disabled={chatLog.length <= 0}
-              onClick={() => setShowChatLog(true)}
-            />
-          )}
         </div>
       </div>
-      {showChatLog && <ChatLog messages={chatLog} />}
+      <ChatLog messages={chatLog} />
       {showSettings && (
         <Settings
           openAiKey={openAiKey}
@@ -145,7 +128,7 @@ export const Menu = ({
           onChangeKoeiromapKey={handleChangeKoeiromapKey}
         />
       )}
-      {!showChatLog && assistantMessage && (
+      {assistantMessage && (
         <AssistantText message={assistantMessage} />
       )}
       <input
