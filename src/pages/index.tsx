@@ -15,6 +15,7 @@ import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
+import { ChatLog } from "@/components/chatLog";
 
 export default function Home() {
   const { viewer } = useContext(ViewerContext);
@@ -77,15 +78,8 @@ export default function Home() {
    */
   const handleSendChat = useCallback(
     async (text: string) => {
-      if (!openAiKey) {
-        setAssistantMessage("APIキーが入力されていません");
-        return;
-      }
-
       const newMessage = text;
-
       if (newMessage == null) return;
-
       setChatProcessing(true);
       // ユーザーの発言を追加して表示
       const messageLog: Message[] = [
@@ -185,35 +179,18 @@ export default function Home() {
   );
 
   return (
-    <div className={"font-M_PLUS_2"}>
-      <Meta />
-      <Introduction
-        openAiKey={openAiKey}
-        koeiroMapKey={koeiromapKey}
-        onChangeAiKey={setOpenAiKey}
-        onChangeKoeiromapKey={setKoeiromapKey}
-      />
-      <VrmViewer />
-      <MessageInputContainer
-        isChatProcessing={chatProcessing}
-        onChatProcessStart={handleSendChat}
-      />
-      <Menu
-        openAiKey={openAiKey}
-        systemPrompt={systemPrompt}
-        chatLog={chatLog}
-        koeiroParam={koeiroParam}
-        assistantMessage={assistantMessage}
-        koeiromapKey={koeiromapKey}
-        onChangeAiKey={setOpenAiKey}
-        onChangeSystemPrompt={setSystemPrompt}
-        onChangeChatLog={handleChangeChatLog}
-        onChangeKoeiromapParam={setKoeiroParam}
-        handleClickResetChatLog={() => setChatLog([])}
-        handleClickResetSystemPrompt={() => setSystemPrompt(SYSTEM_PROMPT)}
-        onChangeKoeiromapKey={setKoeiromapKey}
-      />
-      <GitHubLink />
+    <div className={"font-M_PLUS_2 flex flex-row h-screen"}>
+      <div className="flex-1 h-full flex flex-col">
+        <VrmViewer />
+        <MessageInputContainer
+          isChatProcessing={chatProcessing}
+          onChatProcessStart={handleSendChat}
+        />
+      </div>
+      <div className="flex-1">
+        <ChatLog messages={chatLog} />
+      </div>
+      
     </div>
   );
 }

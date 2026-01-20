@@ -20,8 +20,8 @@ export const ChatLog = ({ messages }: Props) => {
     });
   }, [messages]);
   return (
-    <div className="absolute w-col-span-6 max-w-full h-[100svh] pb-64">
-      <div className="max-h-full px-16 pt-104 pb-64 overflow-y-auto scroll-hidden">
+    <div className="w-full h-[100svh] pb-64 backdrop-blur-md">
+      <div className="max-h-full px-16 pt-24 pb-64 overflow-y-auto scroll-hidden">
         {messages.map((msg, i) => {
           return (
             <div key={i} ref={messages.length - 1 === i ? chatScrollRef : null}>
@@ -45,7 +45,7 @@ const Chat = ({ role, message }: { role: string; message: string }) => {
       <div
         className={`px-24 py-8 rounded-t-8 font-bold tracking-wider ${roleColor}`}
       >
-        {role === "assistant" ? "CHARACTER" : "YOU"}
+        {role === "assistant" ? "角色" : "你"}
       </div>
       <div className="px-24 py-16 bg-white rounded-b-8">
         <div className={`typography-16 font-bold ${roleText}`}>{message}</div>

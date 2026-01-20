@@ -24,10 +24,7 @@ export async function synthesizeVoiceApi(
 
   const body = {
     message: message,
-    speakerX: speakerX,
-    speakerY: speakerY,
     style: reducedStyle,
-    apiKey: apiKey,
   };
 
   const res = await fetch("/api/tts", {
