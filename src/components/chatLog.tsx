@@ -20,7 +20,7 @@ export const ChatLog = ({ messages }: Props) => {
     });
   }, [messages]);
   return (
-    <div className="absolute right-0 w-2/3 h-[100svh] pb-64 bg-white/50 backdrop-blur-md">
+    <div className="w-full h-[100svh] pb-64 backdrop-blur-md">
       <div className="max-h-full px-16 pt-24 pb-64 overflow-y-auto scroll-hidden">
         {messages.map((msg, i) => {
           return (

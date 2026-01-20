@@ -19,7 +19,7 @@ export const MessageInput = ({
   onClickSendButton,
 }: Props) => {
   return (
-    <div className="absolute bottom-0 right-0 z-20 w-2/3">
+    <div>
       <div className="bg-base text-black">
         <div className="mx-auto max-w-4xl p-16">
           <div className="grid grid-flow-col gap-[8px] grid-cols-[min-content_1fr_min-content]">
@@ -47,9 +47,6 @@ export const MessageInput = ({
               onClick={onClickSendButton}
             />
           </div>
-        </div>
-        <div className="py-4 bg-[#413D43] text-center text-white font-Montserrat">
-          powered by VRoid, Koemotion, Volcano Engine
         </div>
       </div>
     </div>
