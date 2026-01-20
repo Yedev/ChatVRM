@@ -42,36 +42,29 @@ export const Introduction = ({
         </div>
         <div className="my-24">
           <div className="my-8 font-bold typography-20 text-secondary">
-            技術紹介
+            Technology
           </div>
           <div>
-            3Dモデルの表示や操作には
+            3D model display uses
             <Link
               url={"https://github.com/pixiv/three-vrm"}
               label={"@pixiv/three-vrm"}
             />
-            、 会話文生成には
+            , conversation generation uses
             <Link
-              url={
-                "https://openai.com/blog/introducing-chatgpt-and-whisper-apis"
-              }
-              label={"ChatGPT API"}
+              url={"https://www.volcengine.com/product/doubao"}
+              label={"Doubao (Volcano Engine)"}
             />
-            、 音声合成には
+            , voice synthesis uses
             <Link url={"https://koemotion.rinna.co.jp/"} label={"Koemotion"} />
-            の
+            's
             <Link
               url={
                 "https://developers.rinna.co.jp/product/#product=koeiromap-free"
               }
               label={"Koeiromap API"}
             />
-            を使用しています。 詳細はこちらの
-            <Link
-              url={"https://inside.pixiv.blog/2023/04/28/160000"}
-              label={"技術解説記事"}
-            />
-            をご覧ください。
+            .
           </div>
           <div className="my-16">
             このデモはGitHubでソースコードを公開しています。自由に変更や改変をお試しください！
@@ -112,32 +105,26 @@ export const Introduction = ({
             />
           </div>
         </div>
-        <div className="my-24">
-          <div className="my-8 font-bold typography-20 text-secondary">
-            OpenAI APIキー
+          <div className="my-24">
+            <div className="my-8 font-bold typography-20 text-secondary">
+              Volcano Engine API Key
+            </div>
+            <input
+              type="text"
+              placeholder="..."
+              value={openAiKey}
+              onChange={handleAiKeyChange}
+              className="my-4 px-16 py-8 w-full h-40 bg-surface3 hover:bg-surface3-hover rounded-4 text-ellipsis"
+            ></input>
+            <div>
+              Enter the API Key provided by Volcano Engine.
+            </div>
+            <div className="my-16">
+              The API is accessed directly from the browser.
+              <br />
+              Model: doubao-seed-1-8-251228
+            </div>
           </div>
-          <input
-            type="text"
-            placeholder="sk-..."
-            value={openAiKey}
-            onChange={handleAiKeyChange}
-            className="my-4 px-16 py-8 w-full h-40 bg-surface3 hover:bg-surface3-hover rounded-4 text-ellipsis"
-          ></input>
-          <div>
-            APIキーは
-            <Link
-              url="https://platform.openai.com/account/api-keys"
-              label="OpenAIのサイト"
-            />
-            で取得できます。取得したAPIキーをフォームに入力してください。
-          </div>
-          <div className="my-16">
-            ChatGPT
-            APIはブラウザから直接アクセスしています。また、APIキーや会話内容はピクシブのサーバには保存されません。
-            <br />
-            ※利用しているモデルはChatGPT API (GPT-3.5)です。
-          </div>
-        </div>
         <div className="my-24">
           <button
             onClick={() => {
