@@ -11,10 +11,6 @@ import { MessageInputContainer } from "@/components/messageInputContainer";
 import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
 import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
 import { getChatResponseStream } from "@/features/chat/openAiChat";
-import { Introduction } from "@/components/introduction";
-import { Menu } from "@/components/menu";
-import { GitHubLink } from "@/components/githubLink";
-import { Meta } from "@/components/meta";
 import { ChatLog } from "@/components/chatLog";
 
 export default function Home() {
@@ -26,7 +22,6 @@ export default function Home() {
   const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(DEFAULT_PARAM);
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
-  const [assistantMessage, setAssistantMessage] = useState("");
 
   useEffect(() => {
     if (window.localStorage.getItem("chatVRMParams")) {
@@ -48,20 +43,6 @@ export default function Home() {
     );
   }, [systemPrompt, koeiroParam, chatLog]);
 
-  const handleChangeChatLog = useCallback(
-    (targetIndex: number, text: string) => {
-      const newChatLog = chatLog.map((v: Message, i) => {
-        return i === targetIndex ? { role: v.role, content: text } : v;
-      });
-
-      setChatLog(newChatLog);
-    },
-    [chatLog]
-  );
-
-  /**
-   * 文ごとに音声を直列でリクエストしながら再生する
-   */
   const handleSpeakAi = useCallback(
     async (
       screenplay: Screenplay,
@@ -73,22 +54,19 @@ export default function Home() {
     [viewer, koeiromapKey]
   );
 
-  /**
-   * アシスタントとの会話を行う
-   */
   const handleSendChat = useCallback(
     async (text: string) => {
-      const newMessage = text;
-      if (newMessage == null) return;
+      if (!text) return;
+
       setChatProcessing(true);
-      // ユーザーの発言を追加して表示
+      // Add user message
       const messageLog: Message[] = [
         ...chatLog,
-        { role: "user", content: newMessage },
+        { role: "user", content: text },
       ];
       setChatLog(messageLog);
 
-      // Chat GPTへ
+      // Create messages for API
       const messages: Message[] = [
         {
           role: "system",
@@ -103,6 +81,7 @@ export default function Home() {
           return null;
         }
       );
+
       if (stream == null) {
         setChatProcessing(false);
         return;
@@ -120,27 +99,28 @@ export default function Home() {
 
           receivedMessage += value;
 
-          // 返答内容のタグ部分の検出
+          // Detect tag (though we removed emotion prompts, we keep this for compatibility)
           const tagMatch = receivedMessage.match(/^\[(.*?)\]/);
           if (tagMatch && tagMatch[0]) {
             tag = tagMatch[0];
             receivedMessage = receivedMessage.slice(tag.length);
           }
 
-          // 返答を一文単位で切り出して処理する
-          const sentenceMatch = receivedMessage.match(
-            /^(.+[。．！？\n]|.{10,}[、,])/
-          );
-          if (sentenceMatch && sentenceMatch[0]) {
-            const sentence = sentenceMatch[0];
-            sentences.push(sentence);
-            receivedMessage = receivedMessage
-              .slice(sentence.length)
-              .trimStart();
+          // Find sentences
+          let match;
+          while (
+            (match = receivedMessage.match(
+              /^(.+[。．！？\n]|.{10,}[、,])/
+            ))
+          ) {
+            const sentence = match[0];
+            receivedMessage = receivedMessage.slice(sentence.length);
 
-            // 発話不要/不可能な文字列だった場合はスキップ
+            // Skip empty/noise
+            const trimmedSentence = sentence.trim();
             if (
-              !sentence.replace(
+              !trimmedSentence ||
+              !trimmedSentence.replace(
                 /^[\s\[\(\{「［（【『〈《〔｛«‹〘〚〛〙›»〕》〉』】）］」\}\)\]]+$/g,
                 ""
               )
@@ -150,30 +130,62 @@ export default function Home() {
 
             const aiText = `${tag} ${sentence}`;
             const aiTalks = textsToScreenplay([aiText], koeiroParam);
+            
+            // Update Dialog
             aiTextLog += aiText;
-
-            // 文ごとに音声を生成 & 再生、返答を表示
-            const currentAssistantMessage = sentences.join(" ");
-            handleSpeakAi(aiTalks[0], () => {
-              setAssistantMessage(currentAssistantMessage);
+            const currentAiTextLog = aiTextLog;
+            
+            setChatLog((prev) => {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg.role === "assistant") {
+                    const newLog = [...prev];
+                    newLog[newLog.length - 1] = {
+                        ...lastMsg,
+                        content: currentAiTextLog
+                    };
+                    return newLog;
+                } else {
+                    return [...prev, { role: "assistant", content: currentAiTextLog }];
+                }
             });
+
+            // Synthesize and Play
+            handleSpeakAi(aiTalks[0]);
           }
+        }
+
+        // Handle remaining buffer (flush)
+        if (receivedMessage.length > 0) {
+            const sentence = receivedMessage.trim();
+            if (sentence) {
+                const aiText = `${tag} ${sentence}`;
+                const aiTalks = textsToScreenplay([aiText], koeiroParam);
+                aiTextLog += aiText;
+                const currentAiTextLog = aiTextLog;
+                
+                setChatLog((prev) => {
+                    const lastMsg = prev[prev.length - 1];
+                    if (lastMsg.role === "assistant") {
+                        const newLog = [...prev];
+                        newLog[newLog.length - 1] = {
+                            ...lastMsg,
+                            content: currentAiTextLog
+                        };
+                        return newLog;
+                    } else {
+                        return [...prev, { role: "assistant", content: currentAiTextLog }];
+                    }
+                });
+                handleSpeakAi(aiTalks[0]);
+            }
         }
       } catch (e) {
         setChatProcessing(false);
         console.error(e);
       } finally {
         reader.releaseLock();
+        setChatProcessing(false);
       }
-
-      // アシスタントの返答をログに追加
-      const messageLogAssistant: Message[] = [
-        ...messageLog,
-        { role: "assistant", content: aiTextLog },
-      ];
-
-      setChatLog(messageLogAssistant);
-      setChatProcessing(false);
     },
     [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam]
   );
@@ -190,7 +202,6 @@ export default function Home() {
       <div className="flex-1">
         <ChatLog messages={chatLog} />
       </div>
-      
     </div>
   );
 }

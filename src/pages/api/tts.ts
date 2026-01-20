@@ -15,12 +15,12 @@ const BYTEDANCE_CONFIG = {
 
 // 语音类型映射
 const voiceTypeMap: Record<TalkStyle, string> = {
-  talk: "zh_female_jitangnv_saturn_bigtts",
-  happy: "zh_female_jitangnv_saturn_bigtts",
-  sad: "zh_female_jitangnv_saturn_bigtts",
-  angry: "zh_female_jitangnv_saturn_bigtts",
-  fear: "zh_female_jitangnv_saturn_bigtts",
-  surprised: "zh_female_jitangnv_saturn_bigtts",
+  talk: "BV008_streaming",
+  happy: "BV008_streaming",
+  sad: "BV008_streaming",
+  angry: "BV008_streaming",
+  fear: "BV008_streaming",
+  surprised: "BV008_streaming",
 };
 
 /**
